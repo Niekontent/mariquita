@@ -13,7 +13,7 @@ The project is divided into three clear bounded contexts:
 Each context has a well‑defined responsibility and communicates with others through explicit, stable interfaces.
 
 ## 🧩 Domain Architecture
-
+```
 +------------------+       +------------------+       +------------------+
 |     Catalog      |       |     Checkout     |       |      Pricing     |
 |------------------|       |------------------|       |------------------|
@@ -21,7 +21,7 @@ Each context has a well‑defined responsibility and communicates with others th
 | ProductRepo      |       | LineItem         |       | PricingRule      |
 +------------------+       +------------------+       | Rules/*          |
                                                       +------------------+
-
+```
 ## ✔️ Catalog
 The Catalog context contains static product information:
 
