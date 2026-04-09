@@ -45,10 +45,9 @@ defmodule Mariquita.Checkout.Cart do
         cart.items,
         code,
         %LineItem{product: product, quantity: 1},
-          fn %LineItem{} = li ->
-            %LineItem{li | quantity: li.quantity + 1}
-          end
-
+        fn %LineItem{} = li ->
+          %LineItem{li | quantity: li.quantity + 1}
+        end
       )
 
     %__MODULE__{cart | items: items}

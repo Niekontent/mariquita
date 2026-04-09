@@ -14,7 +14,7 @@ defmodule Mariquita.Catalog.ProductRepo do
   to obtain immutable product data (name, code, base price) without needing to
   know how or where the catalog is stored.
   """
-  
+
   alias Mariquita.Catalog.Product
 
   @products %{

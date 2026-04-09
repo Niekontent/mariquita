@@ -1,5 +1,5 @@
 defmodule Mariquita.Pricing.PricingRule do
- @moduledoc """
+  @moduledoc """
   Behaviour defining a pricing rule applied to a single product line.
 
   Pricing rules belong to the **Pricing** bounded context. They encapsulate
@@ -20,7 +20,7 @@ defmodule Mariquita.Pricing.PricingRule do
   (e.g. product code, thresholds, discount values). This makes rules easy to
   parameterize and replace without modifying the checkout logic.
   """
-  
+
   @callback applies_to?(rule :: struct(), product_code :: String.t()) :: boolean()
 
   @callback calculate_total(

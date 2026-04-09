@@ -1,5 +1,5 @@
 defmodule Mariquita.Pricing.Rules.BulkDiscount do
- @moduledoc """
+  @moduledoc """
   Pricing rule applying a discounted unit price when a quantity threshold is met.
 
   This rule activates when the number of purchased units for a given product

@@ -1,5 +1,5 @@
 defmodule Mariquita.Checkout.LineItem do
-   @moduledoc """
+  @moduledoc """
   Represents a single entry in the shopping cart.
 
   A `LineItem` belongs to the **Checkout** bounded context and models the

@@ -1,5 +1,5 @@
 defmodule Mariquita.Pricing.Rules.PercentageDiscount do
- @moduledoc """
+  @moduledoc """
   Pricing rule applying a percentage‑based discount when a quantity threshold is met.
 
   When the number of purchased units reaches the configured `threshold`, the
