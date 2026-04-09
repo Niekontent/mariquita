@@ -36,11 +36,11 @@ defmodule Mariquita do
   the checkout system applies automatically when a new cart is created.
   """
 
+  alias Mariquita.Catalog.ProductRepo
   alias Mariquita.Checkout.Cart
   alias Mariquita.Pricing.Engine
-  alias Mariquita.Catalog.ProductRepo
-  alias Mariquita.Pricing.Rules.BuyOneGetOneFree
   alias Mariquita.Pricing.Rules.BulkDiscount
+  alias Mariquita.Pricing.Rules.BuyOneGetOneFree
   alias Mariquita.Pricing.Rules.PercentageDiscount
 
   @type cart :: Cart.t()
