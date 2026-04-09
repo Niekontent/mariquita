@@ -47,10 +47,35 @@ defmodule Mariquita.CheckoutAcceptanceTest do
     assert Mariquita.formatted_total(cart) == "£30.57"
   end
 
-  test "returns error when scanning unknown product" do
+  # test "returns error when scanning unknown product" do
+  #   cart = Mariquita.new_cart()
+
+  #   assert {:error, :unknown_product} = Mariquita.scan(cart, "XYZ")
+  # end
+
+  test "scan/2 returns {:ok, cart} when product exists" do
+    cart = Mariquita.new_cart()
+    assert {:ok, updated} = Mariquita.scan(cart, "GR1")
+    assert updated != cart
+  end
+
+  test "scan/2 returns {:error, :unknown_product} when product does not exist" do
+    cart = Mariquita.new_cart()
+    assert {:error, :unknown_product} = Mariquita.scan(cart, "NOPE")
+  end
+
+  test "scan!/2 returns cart when product exists" do
+    cart = Mariquita.new_cart()
+    updated = Mariquita.scan!(cart, "GR1")
+    assert updated != cart
+  end
+
+  test "scan!/2 raises when product does not exist" do
     cart = Mariquita.new_cart()
 
-    assert {:error, :unknown_product} = Mariquita.scan(cart, "XYZ")
+    assert_raise ArgumentError, "Unknown product code: NOPE", fn ->
+      Mariquita.scan!(cart, "NOPE")
+    end
   end
 
   defp scan_ok(cart, code) do
