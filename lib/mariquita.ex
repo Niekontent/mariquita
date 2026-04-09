@@ -50,8 +50,13 @@ defmodule Mariquita do
   end
 
   def scan(%Cart{} = cart, product_code) do
-    product = ProductRepo.get!(product_code)
-    Cart.add_item(cart, product)
+    case ProductRepo.get(product_code) do
+      {:ok, product} ->
+        {:ok, Cart.add_item(cart, product)}
+
+      :error ->
+        {:error, :unknown_product}
+    end
   end
 
   def total(%Cart{rules: rules} = cart) do
