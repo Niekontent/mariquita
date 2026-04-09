@@ -21,8 +21,8 @@ defmodule Mariquita.Checkout.Cart do
   but never mutates product definitions or pricing rules.
   """
 
-  alias Mariquita.Checkout.LineItem
   alias Mariquita.Catalog.Product
+  alias Mariquita.Checkout.LineItem
 
   @enforce_keys [:items, :rules]
   defstruct items: %{}, rules: []

@@ -47,12 +47,6 @@ defmodule Mariquita.CheckoutAcceptanceTest do
     assert Mariquita.formatted_total(cart) == "£30.57"
   end
 
-  # test "returns error when scanning unknown product" do
-  #   cart = Mariquita.new_cart()
-
-  #   assert {:error, :unknown_product} = Mariquita.scan(cart, "XYZ")
-  # end
-
   test "scan/2 returns {:ok, cart} when product exists" do
     cart = Mariquita.new_cart()
     assert {:ok, updated} = Mariquita.scan(cart, "GR1")
