@@ -26,7 +26,6 @@ Each context has a well‑defined responsibility and communicates with others th
 The Catalog context contains static product information:
 
 - `Product` — domain entity
-
 - `ProductRepo` — in‑memory repository (can be replaced with a database later)
 
 Catalog is the **source of truth** for product data.
@@ -36,10 +35,13 @@ Checkout and Pricing **only read** from this context.
 Responsible for:
 
 - creating and managing the shopping cart (`Cart`)
-
-- scanning products (`scan/2`)
-
+- scanning products (`scan/2` and `scan!/2`)
 - grouping identical products into `LineItem`
+
+Checkout provides two variants for scanning products:
+
+- `scan/2` — safe, non‑raising version returning `{:ok, cart}` or `{:error, :unknown_product}`
+- `scan!/2` — raising version for clean pipelines, returning `cart` or raising `ArgumentError`
 
 Checkout **does not perform any pricing logic.**
 Its job is to prepare structured data for the Pricing context.
@@ -48,23 +50,16 @@ Its job is to prepare structured data for the Pricing context.
 Responsible for:
 
 - selecting the correct pricing rule for each product
-
 - computing the final total
-
 - defining the supermarket’s promotional policy
 
 Components:
 
 - `PricingRule` — behaviour for all pricing rules
-
 - `Engine` — orchestrates rule execution
-
 - `Rules/*` — concrete promotions:
-
   - Buy One Get One Free
-
   - Bulk Discount
-
   - Percentage Discount
 
 Pricing is **pure and stateless** — it never mutates the cart or products.
@@ -79,7 +74,7 @@ cart = Mariquita.new_cart()
 2. Products are scanned:
 
 ```elixir
-cart = Mariquita.scan(cart, "GR1")
+cart = Mariquita.scan!(cart, "GR1")
 ```
 
 3. Checkout fetches the product from Catalog and updates the cart.

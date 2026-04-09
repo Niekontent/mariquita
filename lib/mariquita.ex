@@ -1,39 +1,75 @@
 defmodule Mariquita do
   @moduledoc """
-  Public API for the supermarket checkout system.
+  Public API module for the supermarket checkout system.
 
-  This module acts as the entry point to the **Checkout** bounded context. It
-  provides a simple, high‑level interface for creating carts, scanning products,
-  and computing totals, while delegating all domain logic to the appropriate
-  contexts:
+  This module exposes the high‑level API used to interact with the checkout
+  workflow: creating carts, scanning products, and computing totals. Internally,
+  it delegates to the Catalog, Checkout, and Pricing bounded contexts, but hides
+  their complexity behind a simple and ergonomic interface.
 
-    * product lookup is handled by the **Catalog** context
-    * cart state is managed by the **Checkout** context
-    * price calculation is performed by the **Pricing** context
+  ## Scanning products
 
-  The goal of this module is to offer a clean and minimal surface for clients
-  such as CLI tools, web controllers, or automated tests. It hides internal
-  details such as pricing rule configuration, cart structure, and rule
-  evaluation mechanics.
+  Two variants are provided for scanning products into the cart:
 
-  Typical usage:
+  ### `scan/2` — safe, non‑raising variant
 
-      cart =
-        Mariquita.new_cart()
-        |> Mariquita.scan("GR1")
-        |> Mariquita.scan("SR1")
+      scan(cart, product_code) :: {:ok, cart} | {:error, :unknown_product}
 
-      Mariquita.formatted_total(cart)
-      #=> "£8.11"
+  This function attempts to look up the product in the catalog and add it to the
+  cart. It **never raises exceptions**. Instead, it returns a tagged tuple
+  indicating success or failure.
 
-  The module is intentionally lightweight and delegates all business logic to
-  specialized components, keeping the public API stable and easy to use.
+  Use this variant when:
+
+    * you want explicit error handling,
+    * you are writing domain logic or tests,
+    * an unknown product is a normal domain case.
+
+  ### `scan!/2` — raising, convenient variant
+
+      scan!(cart, product_code) :: cart | no_return()
+
+  This function behaves like `scan/2` on success, but **raises an
+  `ArgumentError`** if the product does not exist in the catalog.
+
+  Use this variant when:
+
+    * you want clean pipelines,
+    * you are writing examples, scripts, or REPL‑style code,
+    * an unknown product should be treated as a programmer error.
+
+  This mirrors the common Elixir convention (`File.read/1` vs `File.read!/1`,
+  `Map.fetch/2` vs `Map.fetch!/2`, etc.).
 
   ## Pricing rules
 
-  The function `default_pricing_rules/0` (private) defines the supermarket’s
-  default promotional policy. It returns a list of pricing rule structs that
-  the checkout system applies automatically when a new cart is created.
+  The default pricing rules applied by the checkout system are defined internally
+  and injected automatically when a new cart is created. These rules implement the
+  `Mariquita.Pricing.PricingRule` behaviour and encapsulate the supermarket’s
+  promotional policy.
+
+  ## Examples
+
+  Using the raising variant for clean pipelines:
+
+      cart =
+        Mariquita.new_cart()
+        |> Mariquita.scan!("GR1")
+        |> Mariquita.scan!("SR1")
+        |> Mariquita.scan!("GR1")
+
+      Mariquita.formatted_total(cart)
+      #=> "£16.61"
+
+  Using the safe variant for explicit error handling:
+
+      case Mariquita.scan(cart, "NOPE") do
+        {:ok, cart} ->
+          # product added
+
+        {:error, :unknown_product} ->
+          # show message to the user
+      end
   """
 
   alias Mariquita.Catalog.ProductRepo
@@ -49,6 +85,30 @@ defmodule Mariquita do
     %Cart{items: %{}, rules: rules}
   end
 
+  @doc """
+  Safely scans a product into the cart.
+
+  This function attempts to look up the product in the catalog and, if found,
+  adds it to the cart. It never raises exceptions. Instead, it returns a tagged
+  tuple indicating success or failure.
+
+  ## Returns
+
+    * `{:ok, cart}` — when the product exists and was added successfully
+    * `{:error, :unknown_product}` — when the product code does not exist in the catalog
+
+  This variant is recommended for use in domain logic, tests, and any code that
+  needs explicit control over error handling without interrupting the execution
+  flow.
+
+  ## Examples
+
+      iex> {:ok, cart} = Mariquita.scan(cart, "GR1")
+      iex> Mariquita.scan(cart, "NOPE")
+      {:error, :unknown_product}
+
+  """
+
   def scan(%Cart{} = cart, product_code) do
     case ProductRepo.get(product_code) do
       {:ok, product} ->
@@ -58,6 +118,33 @@ defmodule Mariquita do
         {:error, :unknown_product}
     end
   end
+
+  @doc """
+  Scans a product into the cart, raising an exception on failure.
+
+  This is the bang (`!`) variant of `scan/2`. It behaves the same on success,
+  returning the updated cart, but raises an `ArgumentError` if the product code
+  does not exist in the catalog.
+
+  This variant is convenient for pipelines, scripts, and examples where explicit
+  error handling would add noise, and where an unknown product should be treated
+  as a programmer error rather than a normal domain case.
+
+  ## Raises
+
+    * `ArgumentError` — if the product code is not found in the catalog
+
+  ## Examples
+
+      iex> cart =
+      ...>   Mariquita.new_cart()
+      ...>   |> Mariquita.scan!("GR1")
+      ...>   |> Mariquita.scan!("SR1")
+
+      iex> Mariquita.scan!(cart, "NOPE")
+      ** (ArgumentError) Unknown product code: NOPE
+
+  """
 
   def scan!(%Cart{} = cart, product_code) do
     case scan(cart, product_code) do
