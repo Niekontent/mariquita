@@ -59,6 +59,16 @@ defmodule Mariquita do
     end
   end
 
+  def scan!(%Cart{} = cart, product_code) do
+    case scan(cart, product_code) do
+      {:ok, cart} ->
+        cart
+
+      {:error, :unknown_product} ->
+        raise ArgumentError, "Unknown product code: #{product_code}"
+    end
+  end
+
   def total(%Cart{rules: rules} = cart) do
     Engine.total(cart, rules)
   end

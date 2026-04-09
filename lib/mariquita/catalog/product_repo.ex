@@ -23,11 +23,10 @@ defmodule Mariquita.Catalog.ProductRepo do
     "CF1" => %Product{code: "CF1", name: "Coffee", unit_price: 1123}
   }
 
-def get(code) do
-  case Map.fetch(@products, code) do
-    {:ok, product} -> {:ok, product}
-    :error -> :error
+  def get(code) do
+    case Map.fetch(@products, code) do
+      {:ok, product} -> {:ok, product}
+      :error -> :error
+    end
   end
-end
-
 end

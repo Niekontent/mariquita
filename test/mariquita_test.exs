@@ -3,7 +3,6 @@ defmodule Mariquita.CheckoutAcceptanceTest do
 
   alias Mariquita
 
-
   test "GR1, SR1, GR1, GR1, CF1 => 22.45" do
     cart =
       Mariquita.new_cart()
