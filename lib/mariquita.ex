@@ -41,13 +41,6 @@ defmodule Mariquita do
   This mirrors the common Elixir convention (`File.read/1` vs `File.read!/1`,
   `Map.fetch/2` vs `Map.fetch!/2`, etc.).
 
-  ## Pricing rules
-
-  The default pricing rules applied by the checkout system are defined internally
-  and injected automatically when a new cart is created. These rules implement the
-  `Mariquita.Pricing.PricingRule` behaviour and encapsulate the supermarket’s
-  promotional policy.
-
   ## Examples
 
   Using the raising variant for clean pipelines:
@@ -70,6 +63,13 @@ defmodule Mariquita do
         {:error, :unknown_product} ->
           # show message to the user
       end
+
+  ## Pricing rules
+
+  The default pricing rules applied by the checkout system are defined internally
+  and injected automatically when a new cart is created. These rules implement the
+  `Mariquita.Pricing.PricingRule` behaviour and encapsulate the supermarket’s
+  promotional policy.
   """
 
   alias Mariquita.Catalog.ProductRepo
